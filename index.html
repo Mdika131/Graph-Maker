@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Maker</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <aside class="sidebar card">
+            <header>
+                <h1>Graph Maker <span class="dot">.</span></h1>
+                <p>Visualize your data instantly.</p>
+            </header>
+
+            <div class="control-panel">
+                
+                <div class="data-header">
+                    <label>Your Data Points</label>
+                    <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
+                </div>
+
+                <div id="data-points-container" class="data-points-container">
+                    <div class="data-row">
+                        <input type="text" class="data-label" placeholder="Label (e.g. Q1)">
+                        
+                        <div class="number-input-wrapper">
+                            <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
+                            <input type="number" class="data-value" value="0">
+                            <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
+                        </div>
+
+                        <button type="button" onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
+                    </div>
+                </div>
+                
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label for="graphType">Chart Style</label>
+                    <div class="select-wrapper">
+                        <select id="graphType">
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="pie">Pie Chart</option>
+                            <option value="doughnut">Doughnut</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="createGraph()" class="generate-btn">
+                    Generate Graph
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </button>
+
+            <div class="action-buttons">               
+                    <button onclick="downloadGraph()" class="download-btn" id="downloadBtn" style="display: none;">
+                        ↓ Download PNG
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="chart-display card">
+            <div class="canvas-wrapper">
+                <canvas id="myChart"></canvas>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
