@@ -1,0 +1,439 @@
+/* --- Global Variables & Theme --- */
+:root {
+    --bg-dark: #0f172a;       /* Deep slate background */
+    --card-bg: #1e293b;       /* Slightly lighter slate for cards */
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --accent-glow: rgba(99, 102, 241, 0.4);
+    --input-bg: #0f172a;
+    --border-color: #334155;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* --- Layout --- */
+.dashboard-container {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    height: 80vh;
+    min-height: 600px;
+}
+
+/* --- Premium Cards --- */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 350px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* A stylish accent dot for the logo */
+.dot {
+    color: #a855f7;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-bottom: 2.5rem;
+}
+
+/* --- Controls --- */
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex-grow: 1;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input, select {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+input::placeholder {
+    color: #475569;
+}
+
+input:focus, select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Custom Select Dropdown Styling */
+select {
+    appearance: none;
+    cursor: pointer;
+}
+.select-wrapper {
+    position: relative;
+}
+.select-wrapper::after {
+    content: "▼";
+    font-size: 0.8rem;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* --- Button --- */
+.generate-btn {
+    margin-top: auto;
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    padding: 1.2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px -5px var(--accent-glow);
+}
+
+.generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px var(--accent-glow);
+    filter: brightness(1.1);
+}
+
+.generate-btn:active {
+    transform: translateY(0);
+}
+
+/* --- Main Chart Area --- */
+.chart-display {
+    flex-grow: 1;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent 50%), var(--card-bg);
+}
+
+.canvas-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 850px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebar {
+        width: 100%;
+    }
+    .chart-display {
+        height: 400px;
+    }
+}
+
+/* --- Dynamic Data Rows --- */
+.data-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.data-header label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.add-btn {
+    background: transparent;
+    color: #a855f7;
+    border: 1px dashed #a855f7;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-btn:hover {
+    background: rgba(168, 85, 247, 0.1);
+}
+
+.data-points-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 0.5rem; /* Space for scrollbar */
+}
+
+/* --- Premium Custom Scrollbar --- */
+
+/* For Firefox */
+.data-points-container {
+    scrollbar-width: thin;
+    scrollbar-color: #475569 transparent;
+}
+
+/* For Chrome, Edge, and Safari */
+.data-points-container::-webkit-scrollbar {
+    width: 8px; /* Sleek but easy to click */
+}
+
+/* The track (background) of the scrollbar */
+.data-points-container::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.3); /* Subtle dark background */
+    border-radius: 10px;
+}
+
+/* The draggable handle */
+.data-points-container::-webkit-scrollbar-thumb {
+    background-color: #475569; /* Smooth slate color */
+    border-radius: 10px;
+    border: 2px solid var(--card-bg); /* Creates a neat "padding" effect */
+}
+
+/* Hover effect for the handle */
+.data-points-container::-webkit-scrollbar-thumb:hover {
+    background-color: #6366f1; /* Lights up with your indigo accent color! */
+    cursor: pointer;
+}
+
+/* --- Fix: Ensure rows take full width and distribute space evenly --- */
+.data-row {
+    display: flex;
+    gap: 1rem;
+    animation: fadeIn 0.3s ease;
+    width: 100%;
+}
+
+.data-row > .data-label {
+    flex: 1; /* Takes up 50% of the row */
+}
+
+.number-input-wrapper {
+    flex: 2; /* Takes up the other 50% of the row */
+    display: flex;
+    align-items: center;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.number-input-wrapper:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.number-input-wrapper input {
+    flex: 1; /* NEW: Forces the input to stretch and be clickable! */
+    min-width: 50px; /* NEW: Prevents it from shrinking to nothing */
+    border: none;
+    border-radius: 0;
+    text-align: center;
+    padding: 1.2rem 0;   
+    font-size: 1.1rem;  
+    font-weight: 600;   
+    color: var(--text-main);
+    background: transparent;
+}
+
+.number-input-wrapper input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.data-row input {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.remove-btn {
+    background-color: transparent;
+    color: #ef4444; /* Red */
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    width: 40px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remove-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+}
+
+/* --- Custom Number Spinners --- */
+.number-input-wrapper input {
+    flex: 1; 
+    min-width: 15px; /* LOWERED: allows the box to shrink gracefully without pushing the + button out */
+    border: none;
+    border-radius: 0;
+    text-align: center;
+    padding: 1rem 0;
+    color: var(--text-main);
+    background: transparent;
+}
+
+.number-input-wrapper input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Moves the glow effect to the wrapper so it looks like one solid input */
+.number-input-wrapper:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.number-input-wrapper input {
+    border: none;       /* Removes internal border */
+    border-radius: 0;   /* Removes internal curves */
+    text-align: center; /* Centers the number */
+    padding: 1rem 0;
+    width: 100%;
+}
+
+.number-input-wrapper input:focus {
+    box-shadow: none;   /* Removes the default blue glow from the inside */
+}
+
+/* The actual + and - buttons */
+.spin-btn {
+    flex-shrink: 0; /* NEW: Forces the browser to never squish or hide these buttons */
+    width: 35px;    /* NEW: Gives them a consistent size so they always look balanced */
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 0;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spin-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.spin-btn:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* --- Remove Default Number Input Arrows (Spinners) --- */
+
+/* For Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/*----*/
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.download-btn {
+    flex: 1;
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 1.2rem;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.download-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #94a3b8;
+}
