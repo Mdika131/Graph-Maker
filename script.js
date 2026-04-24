@@ -72,6 +72,37 @@ function loadWorkspace() {
     }
 }
 
+// Wipes the board clean to start a new graph
+function clearWorkspace() {
+    // Show a quick warning so they don't click it by accident
+    if (confirm("Are you sure you want to clear your entire graph? This cannot be undone.")) {
+        
+        // 1. Clear the local storage
+        localStorage.removeItem('graphMakerData');
+        
+        // 2. Empty out all the text boxes
+        document.getElementById('chartTitle').value = '';
+        document.getElementById('xAxisLabel').value = '';
+        document.getElementById('yAxisLabel').value = '';
+        
+        // 3. Delete all rows
+        const container = document.getElementById('data-points-container');
+        container.innerHTML = '';
+        
+        // 4. Destroy the canvas chart so it goes blank
+        if (myChartInstance != null) {
+            myChartInstance.destroy();
+            myChartInstance = null; // Reset the instance
+        }
+        
+        // 5. Hide the download button
+        document.getElementById('downloadBtn').style.display = 'none';
+
+        // 6. Add one fresh, empty row back to the UI
+        addDataRow(); 
+    }
+}
+
 // Lifecycle Hooks
 document.addEventListener('DOMContentLoaded', () => {
     loadWorkspace(); // Restore session

@@ -25,7 +25,10 @@
                 
                 <div class="data-header">
                     <label>Your Data Points</label>
-                    <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="clearWorkspace()" class="add-btn" style="color: #ef4444; border-color: #ef4444;">⟲ Reset</button>
+                        <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
+                    </div>
                 </div>
 
                 <div id="data-points-container" class="data-points-container">
