@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -29,15 +30,31 @@
 
                 <div id="data-points-container" class="data-points-container">
                     <div class="data-row">
-                        <input type="text" class="data-label" placeholder="Label (e.g. Q1)">
+                        <input type="color" class="data-color" value="#6366f1" title="Pick a color">
                         
+                        <input type="text" class="data-label" placeholder="Label">
                         <div class="number-input-wrapper">
                             <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
                             <input type="number" class="data-value" value="0">
                             <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
                         </div>
+                        <button onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
+                    </div>
+                </div>
 
-                        <button type="button" onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label for="chartTitle">Chart Title</label>
+                    <input type="text" id="chartTitle" placeholder="e.g., Monthly Revenue 2024">
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <div class="input-group" style="flex: 1;">
+                        <label for="xAxisLabel">X-Axis Label</label>
+                        <input type="text" id="xAxisLabel" placeholder="e.g., Months">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label for="yAxisLabel">Y-Axis Label</label>
+                        <input type="text" id="yAxisLabel" placeholder="e.g., Sales ($)">
                     </div>
                 </div>
                 
@@ -53,12 +70,7 @@
                     </div>
                 </div>
 
-                <button onclick="createGraph()" class="generate-btn">
-                    Generate Graph
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                </button>
-
-            <div class="action-buttons">               
+                <div class="action-buttons">               
                     <button onclick="downloadGraph()" class="download-btn" id="downloadBtn" style="display: none;">
                         ↓ Download PNG
                     </button>
