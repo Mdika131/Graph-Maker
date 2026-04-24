@@ -231,7 +231,7 @@ select {
     padding-right: 0.5rem; /* Space for scrollbar */
 }
 
-/* --- Premium Custom Scrollbar --- */
+/* --- Scrollbar --- */
 
 /* For Firefox */
 .data-points-container {
@@ -241,29 +241,28 @@ select {
 
 /* For Chrome, Edge, and Safari */
 .data-points-container::-webkit-scrollbar {
-    width: 8px; /* Sleek but easy to click */
+    width: 8px; 
 }
 
 /* The track (background) of the scrollbar */
 .data-points-container::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.3); /* Subtle dark background */
+    background: rgba(15, 23, 42, 0.3); 
     border-radius: 10px;
 }
 
 /* The draggable handle */
 .data-points-container::-webkit-scrollbar-thumb {
-    background-color: #475569; /* Smooth slate color */
+    background-color: #475569; 
     border-radius: 10px;
-    border: 2px solid var(--card-bg); /* Creates a neat "padding" effect */
+    border: 2px solid var(--card-bg);
 }
 
 /* Hover effect for the handle */
 .data-points-container::-webkit-scrollbar-thumb:hover {
-    background-color: #6366f1; /* Lights up with your indigo accent color! */
+    background-color: #6366f1; 
     cursor: pointer;
 }
 
-/* --- Fix: Ensure rows take full width and distribute space evenly --- */
 .data-row {
     display: flex;
     gap: 1rem;
@@ -272,11 +271,11 @@ select {
 }
 
 .data-row > .data-label {
-    flex: 1; /* Takes up 50% of the row */
+    flex: 1; 
 }
 
 .number-input-wrapper {
-    flex: 2; /* Takes up the other 50% of the row */
+    flex: 2; 
     display: flex;
     align-items: center;
     background-color: var(--input-bg);
@@ -362,21 +361,21 @@ select {
 }
 
 .number-input-wrapper input {
-    border: none;       /* Removes internal border */
-    border-radius: 0;   /* Removes internal curves */
-    text-align: center; /* Centers the number */
+    border: none;       
+    border-radius: 0;   
+    text-align: center; 
     padding: 1rem 0;
     width: 100%;
 }
 
 .number-input-wrapper input:focus {
-    box-shadow: none;   /* Removes the default blue glow from the inside */
+    box-shadow: none;   
 }
 
 /* The actual + and - buttons */
 .spin-btn {
-    flex-shrink: 0; /* NEW: Forces the browser to never squish or hide these buttons */
-    width: 35px;    /* NEW: Gives them a consistent size so they always look balanced */
+    flex-shrink: 0; 
+    width: 35px;    
     background: transparent;
     color: var(--text-muted);
     border: none;
