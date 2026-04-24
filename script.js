@@ -5,49 +5,150 @@ Chart.defaults.color = '#94a3b8';
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.05)';
 
-// Custom number input spinner logic
+// --- Workspace Storage Logic ---
+
+// Saves current row data and chart configuration to LocalStorage
+function saveWorkspace() {
+    const rows = document.querySelectorAll('.data-row');
+    const workspaceData = [];
+
+    // Map DOM elements to a data object array
+    rows.forEach(row => {
+        const color = row.querySelector('.data-color').value;
+        const label = row.querySelector('.data-label').value;
+        const value = row.querySelector('.data-value').value;
+        workspaceData.push({ color, label, value });
+    });
+
+    // Package state including chart metadata
+    const saveState = {
+        data: workspaceData,
+        chartType: document.getElementById('graphType').value,
+        chartTitle: document.getElementById('chartTitle').value,
+        xAxisLabel: document.getElementById('xAxisLabel').value,
+        yAxisLabel: document.getElementById('yAxisLabel').value
+    };
+
+    localStorage.setItem('graphMakerData', JSON.stringify(saveState));
+}
+
+// Restores saved data and rebuilds the DOM elements on initialization
+function loadWorkspace() {
+    const savedState = localStorage.getItem('graphMakerData');
+    
+    if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        const container = document.getElementById('data-points-container');
+        
+        // Restore Chart settings and metadata
+        if (parsedState.chartType) document.getElementById('graphType').value = parsedState.chartType;
+        if (parsedState.chartTitle) document.getElementById('chartTitle').value = parsedState.chartTitle;
+        if (parsedState.xAxisLabel) document.getElementById('xAxisLabel').value = parsedState.xAxisLabel;
+        if (parsedState.yAxisLabel) document.getElementById('yAxisLabel').value = parsedState.yAxisLabel;
+
+        // Rebuild data rows if saved state exists
+        if (parsedState.data && parsedState.data.length > 0) {
+            container.innerHTML = ''; // Clear default HTML row
+
+            parsedState.data.forEach(data => {
+                const row = document.createElement('div');
+                row.className = 'data-row';
+                row.innerHTML = `
+                    <input type="color" class="data-color" value="${data.color}" title="Pick a color">
+                    <input type="text" class="data-label" placeholder="Label" value="${data.label}">
+                    <div class="number-input-wrapper">
+                        <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
+                        <input type="number" class="data-value" value="${data.value}">
+                        <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
+                    </div>
+                    <button onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
+                `;
+                container.appendChild(row);
+            });
+            
+            // Auto-render the chart using the restored data
+            createGraph(); 
+        }
+    }
+}
+
+// Lifecycle Hooks
+document.addEventListener('DOMContentLoaded', () => {
+    loadWorkspace(); // Restore session
+    
+    // NEW: A super-function that saves data AND redraws the graph instantly
+    function handleUpdate() {
+        saveWorkspace();
+        
+        // Only try to draw the graph if there's actually a label and value filled out
+        const firstLabel = document.querySelector('.data-label').value;
+        const firstValue = document.querySelector('.data-value').value;
+        if (firstLabel !== "" && firstValue !== "") {
+            createGraph(); 
+        }
+    }
+
+    // Trigger the super-function anytime the user types, clicks, or changes a color!
+    document.getElementById('data-points-container').addEventListener('input', handleUpdate);
+    document.getElementById('graphType').addEventListener('change', handleUpdate);
+    document.getElementById('chartTitle').addEventListener('input', handleUpdate);
+    document.getElementById('xAxisLabel').addEventListener('input', handleUpdate);
+    document.getElementById('yAxisLabel').addEventListener('input', handleUpdate);
+});
+// --- Core UI Logic ---
+
+// Number input spinner utilities
 function incrementValue(btnElement) {
     const input = btnElement.previousElementSibling;
-    // Default to 0 if the input is empty
     const currentValue = Number(input.value) || 0;
     input.value = currentValue + 1;
+    saveWorkspace(); // Sync state
 }
 
 function decrementValue(btnElement) {
     const input = btnElement.nextElementSibling;
-    // Default to 0 if the input is empty
     const currentValue = Number(input.value) || 0;
     input.value = currentValue - 1;
+    saveWorkspace(); // Sync state
 }
 
 // Appends a new data row to the DOM
 function addDataRow() {
     const container = document.getElementById('data-points-container');
-    const newRow = document.createElement('div');
-    newRow.className = 'data-row';
+    const rowCount = container.children.length;
     
-    newRow.innerHTML = `
+    // Cycle through predefined theme colors for row initialization
+    const themeColors = ['#6366f1', '#0ea5e9', '#10b981', '#f43f5e', '#a855f7', '#facc15'];
+    const nextColor = themeColors[rowCount % themeColors.length];
+
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    row.innerHTML = `
+        <input type="color" class="data-color" value="${nextColor}" title="Pick a color">
         <input type="text" class="data-label" placeholder="Label">
         <div class="number-input-wrapper">
             <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
             <input type="number" class="data-value" value="0">
             <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
         </div>
-        <button type="button" onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
+        <button onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
     `;
+    container.appendChild(row);
     
-    container.appendChild(newRow);
     // Auto-scroll to the bottom of the container
     container.scrollTop = container.scrollHeight;
+    
+    saveWorkspace(); // Sync state
 }
 
 // Handles row deletion
 function removeDataRow(buttonElement) {
     const container = document.getElementById('data-points-container');
     
-    // Prevent deletion of the very last row
+    // Prevent deletion of the final remaining row
     if (container.children.length > 1) {
         buttonElement.parentElement.remove();
+        saveWorkspace(); // Sync state
     } else {
         alert("You must have at least one data point!");
     }
@@ -57,45 +158,44 @@ function removeDataRow(buttonElement) {
 function createGraph() {
     const labelsArray = [];
     const valuesArray = [];
+    const colorsArray = [];
 
     const rows = document.querySelectorAll('.data-row');
 
-    // Extract labels and values from the active DOM rows
+    // Extract labels, values, and hex colors from active DOM rows
     rows.forEach(row => {
         const labelInput = row.querySelector('.data-label').value.trim();
         const valueInput = row.querySelector('.data-value').value;
+        const colorInput = row.querySelector('.data-color').value;
 
         // Ignore rows with incomplete data
         if (labelInput !== "" && valueInput !== "") {
             labelsArray.push(labelInput);
             valuesArray.push(Number(valueInput));
+            colorsArray.push(colorInput);
         }
     });
 
-    // Ensure we have data before attempting to draw the chart
+    // Ensure data exists before attempting to draw the chart
     if (labelsArray.length === 0) {
         alert("Please enter at least one valid Label and Value!");
         return;
     }
 
     const chartType = document.getElementById('graphType').value;
+    const chartTitle = document.getElementById('chartTitle').value.trim();
+    const xAxisLabel = document.getElementById('xAxisLabel').value.trim();
+    const yAxisLabel = document.getElementById('yAxisLabel').value.trim();
+    
     const ctx = document.getElementById('myChart').getContext('2d');
-
+    
+    // Append alpha channel 'CC' (80% opacity) for background fills
+    const transparentBackgrounds = colorsArray.map(color => color + 'CC');
+    
     // Cleanup previous chart instance to avoid rendering overlaps
     if (myChartInstance != null) {
         myChartInstance.destroy();
     }
-
-    // Base theme colors
-    const neonColors = [
-        'rgba(99, 102, 241, 0.8)', 'rgba(14, 165, 233, 0.8)', 
-        'rgba(16, 185, 129, 0.8)', 'rgba(244, 63, 94, 0.8)', 
-        'rgba(168, 85, 247, 0.8)', 'rgba(250, 204, 21, 0.8)'
-    ];
-
-    const solidBorders = [
-        '#6366f1', '#0ea5e9', '#10b981', '#f43f5e', '#a855f7', '#facc15'
-    ];
 
     // Initialize new chart
     myChartInstance = new Chart(ctx, {
@@ -103,10 +203,10 @@ function createGraph() {
         data: {
             labels: labelsArray,
             datasets: [{
-                label: 'Dataset 1',
+                label: yAxisLabel || 'Data Values', // Fallback dataset label
                 data: valuesArray,
-                backgroundColor: neonColors,
-                borderColor: solidBorders,
+                backgroundColor: transparentBackgrounds,
+                borderColor: colorsArray,
                 borderWidth: 2,
                 borderRadius: chartType === 'bar' ? 8 : 0,
                 hoverOffset: 4
@@ -116,9 +216,16 @@ function createGraph() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                title: {
+                    display: chartTitle !== "", // Only render if user provided a title
+                    text: chartTitle,
+                    color: '#f8fafc',
+                    font: { size: 18, family: 'Poppins', weight: '600' },
+                    padding: { bottom: 20 }
+                },
                 legend: {
                     position: 'bottom',
-                    labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' }
+                    labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } 
                 },
                 tooltip: {
                     backgroundColor: 'rgba(15, 23, 42, 0.9)',
@@ -130,12 +237,28 @@ function createGraph() {
                 }
             },
             scales: chartType === 'pie' || chartType === 'doughnut' ? {} : {
-                y: { beginAtZero: true }
+                x: {
+                    title: {
+                        display: xAxisLabel !== "", // Only render if user provided an X label
+                        text: xAxisLabel,
+                        color: '#94a3b8',
+                        font: { size: 13, family: 'Inter', weight: '500' }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: yAxisLabel !== "", // Only render if user provided a Y label
+                        text: yAxisLabel,
+                        color: '#94a3b8',
+                        font: { size: 13, family: 'Inter', weight: '500' }
+                    }
+                }
             }
         }
     });
     
-    // Reveal the download button once a graph is successfully generated
+    // Reveal the export button post-render
     document.getElementById('downloadBtn').style.display = 'flex';
 }
 
