@@ -31,7 +31,7 @@ A sleek, real-time data visualization web application. Built with vanilla JavaSc
 
 Graph Maker is fully deployed and ready to use right in your browser. No installation, build steps, or accounts required!
 
-**[👉 Try Graph Maker Live Here]([https://mdika131.github.io/Graph-Maker/index.html])**
+**👉 [Try Graph Maker Live Here](https://mdika131.github.io/Graph-Maker/index.html)**
 
 ### Local Development
 If you'd like to tinker with the code locally, simply clone this repository and open `index.html` in your browser. Because it is built with pure vanilla web technologies, no package managers or local servers are required.
