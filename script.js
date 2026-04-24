@@ -1,26 +1,26 @@
 let myChartInstance = null;
 
-// Update Chart.js global defaults for Dark Mode
+// Set Chart.js global defaults for dark mode UI
 Chart.defaults.color = '#94a3b8'; 
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.05)';
 
-// --- UPDATED: Smarter Custom Spinner Logic ---
+// Custom number input spinner logic
 function incrementValue(btnElement) {
     const input = btnElement.previousElementSibling;
-    // If the box is completely empty, treat it as 0 before adding 1
+    // Default to 0 if the input is empty
     const currentValue = Number(input.value) || 0;
     input.value = currentValue + 1;
 }
 
 function decrementValue(btnElement) {
     const input = btnElement.nextElementSibling;
-    // If the box is completely empty, treat it as 0 before subtracting 1
+    // Default to 0 if the input is empty
     const currentValue = Number(input.value) || 0;
     input.value = currentValue - 1;
 }
 
-// Don't forget to update addDataRow to use value="0" instead of placeholder too!
+// Appends a new data row to the DOM
 function addDataRow() {
     const container = document.getElementById('data-points-container');
     const newRow = document.createElement('div');
@@ -37,44 +37,42 @@ function addDataRow() {
     `;
     
     container.appendChild(newRow);
+    // Auto-scroll to the bottom of the container
     container.scrollTop = container.scrollHeight;
 }
 
-// --- NEW: Function to Remove a Data Row ---
+// Handles row deletion
 function removeDataRow(buttonElement) {
     const container = document.getElementById('data-points-container');
     
-    // Don't let the user delete the very last row!
+    // Prevent deletion of the very last row
     if (container.children.length > 1) {
-        // The button is inside the row, so we delete the button's "parent"
         buttonElement.parentElement.remove();
     } else {
         alert("You must have at least one data point!");
     }
 }
 
-// --- UPDATED: Generate Graph Logic ---
+// Parses DOM inputs and renders the Chart.js instance
 function createGraph() {
-    // 1. Create empty arrays to hold our new data
     const labelsArray = [];
     const valuesArray = [];
 
-    // 2. Grab all the rows currently on the screen
     const rows = document.querySelectorAll('.data-row');
 
-    // 3. Loop through each row to extract the text and numbers
+    // Extract labels and values from the active DOM rows
     rows.forEach(row => {
         const labelInput = row.querySelector('.data-label').value.trim();
         const valueInput = row.querySelector('.data-value').value;
 
-        // Only add to graph if they actually typed something in both boxes
+        // Ignore rows with incomplete data
         if (labelInput !== "" && valueInput !== "") {
             labelsArray.push(labelInput);
             valuesArray.push(Number(valueInput));
         }
     });
 
-    // Validation check
+    // Ensure we have data before attempting to draw the chart
     if (labelsArray.length === 0) {
         alert("Please enter at least one valid Label and Value!");
         return;
@@ -83,20 +81,23 @@ function createGraph() {
     const chartType = document.getElementById('graphType').value;
     const ctx = document.getElementById('myChart').getContext('2d');
 
+    // Cleanup previous chart instance to avoid rendering overlaps
     if (myChartInstance != null) {
         myChartInstance.destroy();
     }
 
+    // Base theme colors
     const neonColors = [
         'rgba(99, 102, 241, 0.8)', 'rgba(14, 165, 233, 0.8)', 
         'rgba(16, 185, 129, 0.8)', 'rgba(244, 63, 94, 0.8)', 
-        'rgba(168, 85, 247, 0.8)', 'rgba(250, 204, 21, 0.8)' // Added yellow in case they add lots of rows
+        'rgba(168, 85, 247, 0.8)', 'rgba(250, 204, 21, 0.8)'
     ];
 
     const solidBorders = [
         '#6366f1', '#0ea5e9', '#10b981', '#f43f5e', '#a855f7', '#facc15'
     ];
 
+    // Initialize new chart
     myChartInstance = new Chart(ctx, {
         type: chartType,
         data: {
@@ -133,23 +134,17 @@ function createGraph() {
             }
         }
     });
+    
+    // Reveal the download button once a graph is successfully generated
     document.getElementById('downloadBtn').style.display = 'flex';
 }
 
-// --- Download Graph Logic ---
+// Handles exporting the chart canvas as a PNG
 function downloadGraph() {
-    // 1. Grab the canvas element
     const canvas = document.getElementById('myChart');
-    
-    // 2. Create a temporary digital "link"
     const link = document.createElement('a');
     
-    // 3. Name the file that will be downloaded
     link.download = 'My_Graph.png';
-    
-    // 4. Convert the canvas drawing into a standard PNG image URL
-    link.href = canvas.toDataURL('image/png');
-    
-    // 5. Force the browser to click the link, triggering the download!
-    link.click();
+    link.href = canvas.toDataURL('image/png'); // Convert canvas to base64 image URL
+    link.click(); // Trigger native download
 }
