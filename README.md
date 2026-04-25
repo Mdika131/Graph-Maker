@@ -9,7 +9,7 @@ A sleek, real-time data visualization web application. Built with vanilla JavaSc
 * **Real-Time Preview:** The graph updates instantly as you type. No "Generate" button required.
 * **Smart Auto-Save:** Powered by `localStorage`, your session (including data rows, colors, and axis labels) is automatically saved. You will never lose your work if you accidentally refresh or close the tab.
 * **Highly Customizable:**
-  * Choose between **Bar, Line, Pie, and Doughnut** charts.
+  * Choose between **Bar, Line, Pie, Doughnut, Radar, and Area** charts.
   * Add custom chart titles and X/Y axis labels.
   * Pick custom hex colors for individual data points with integrated transparency handling.
 * **Dynamic Row Management:** Add, remove, and reorder data points fluidly with custom number spinners and a constrained, scrolling workspace.
