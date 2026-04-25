@@ -51,7 +51,8 @@ body {
     padding: 2.5rem;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    height: 100%; 
+    overflow: hidden; 
 }
 
 header h1 {
@@ -201,7 +202,7 @@ select {
     gap: 0.5rem;
     overflow-y: auto; 
     padding-right: 5px;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     flex: 1; /* Takes up all available space between the header and chart inputs */
     min-height: 0; /* Forces the scrollbar to appear instead of breaking out */
 }
@@ -364,9 +365,11 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* --- Secondary Actions --- */
 .action-buttons {
-    display: flex;
+    display: flex;  
     gap: 1rem;
-    margin-top: auto; /* Pushes button to the bottom */
+    margin-top: auto; 
+    padding-top: 1rem;
+    flex-shrink: 0;
 }
 
 .download-btn {
@@ -490,4 +493,55 @@ body.transparent-theme .card {
     -webkit-backdrop-filter: blur(12px);
     background-color: rgba(30, 41, 59, 0.4); /* Reduced opacity for better "glass" look */
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Tabbed Interface Styles --- */
+
+/* Navigation bar at the top of the control panel */
+.tab-navigation {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 0.3rem;
+    border-radius: 12px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+/* Highlight the active tab */
+.tab-btn.active {
+    background: var(--card-bg);
+    color: var(--text-main);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Hidden by default, shown when active */
+.tab-content {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+}
+
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0; /* Critical for inner scrolling */
+}
+
+/* Ensure the data container takes max height when its tab is open */
+#data-tab.active .data-points-container {
+    flex-grow: 1;
 }
