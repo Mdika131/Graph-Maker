@@ -464,3 +464,30 @@ input[type="number"]::-webkit-inner-spin-button {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+/* --- Theme Presets --- */
+
+/* --- Theme: Light Mode --- */
+body.light-theme {
+    --bg-dark: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --input-bg: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+/* --- Theme: Transparent --- */
+/* This uses 'backdrop-filter' to blur whatever is behind the web app */
+body.transparent-theme {
+    --bg-dark: #0f172a; /* Keep the body dark so the glass pops */
+    --card-bg: rgba(30, 41, 59, 0.7); /* 70% opacity for that glass effect */
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.transparent-theme .card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(30, 41, 59, 0.4); /* Reduced opacity for better "glass" look */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}

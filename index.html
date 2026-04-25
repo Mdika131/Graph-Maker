@@ -57,6 +57,17 @@
                 </div>
                 
                 <div class="input-group" style="margin-top: 1rem;">
+                    <label for="themeSelect">Appearance</label>
+                    <div class="select-wrapper">
+                        <select id="themeSelect" onchange="changeTheme(this.value)">
+                            <option value="dark">Dark Mode</option>
+                            <option value="light">Light Mode</option>
+                            <option value="transparent">Transparent Mode</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="input-group" style="margin-top: 1rem;">
                     <label for="graphType">Chart Style</label>
                     <div class="select-wrapper">
                         <select id="graphType">

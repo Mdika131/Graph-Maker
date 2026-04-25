@@ -315,12 +315,63 @@ function createGraph() {
     document.getElementById('downloadBtn').style.display = 'flex';
 }
 
-// Handles exporting the chart canvas as a PNG
+/**
+ * Captures the chart as a PNG. 
+ * Logic: 
+ * - Light/Dark themes get a solid background so text is visible in all viewers.
+ * - Transparent theme skips the fill, resulting in a true transparent PNG.
+ */
 function downloadGraph() {
     const canvas = document.getElementById('myChart');
-    const link = document.createElement('a');
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
     
-    link.download = 'My_Graph.png';
-    link.href = canvas.toDataURL('image/png'); // Convert canvas to base64 image URL
-    link.click(); // Trigger native download
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    
+    // Check which theme is currently selected
+    const currentTheme = document.getElementById('themeSelect').value;
+    
+    // Only fill the background if we AREN'T in transparent mode
+    if (currentTheme !== 'transparent') {
+        const isLight = document.body.classList.contains('light-theme');
+        tempCtx.fillStyle = isLight ? '#ffffff' : '#1e293b'; 
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    }
+    // If it's 'transparent', we skip fillRect entirely, keeping the alpha channel at 0
+    
+    // Draw the chart on top (either on the solid color or on nothing/transparency)
+    tempCtx.drawImage(canvas, 0, 0);
+    
+    const link = document.createElement('a');
+    link.download = 'Graph_Maker_Export.png';
+    link.href = tempCanvas.toDataURL('image/png');
+    link.click();
+}
+
+/**
+ * Switches between Dark, Light, and Transparent themes.
+ * It also handles the Chart.js label colors so they stay readable.
+ */
+function changeTheme(themeName) {
+    // Clean slate: remove theme-specific classes
+    document.body.classList.remove('light-theme', 'transparent-theme');
+    
+    if (themeName === 'light') {
+        document.body.classList.add('light-theme');
+        Chart.defaults.color = '#334155'; // Darker text for light background
+        Chart.defaults.scale.grid.color = 'rgba(0, 0, 0, 0.05)';
+    } else {
+        // Both Dark and Transparent use light-colored labels
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.05)';
+        
+        if (themeName === 'transparent') {
+            document.body.classList.add('transparent-theme');
+        }
+    }
+    
+    // Save to localStorage and refresh the UI
+    saveWorkspace();
+    createGraph();
 }
