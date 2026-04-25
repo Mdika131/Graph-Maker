@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://mdika131.github.io/Graph-Maker/sitemap.xml
