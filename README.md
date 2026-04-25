@@ -1,27 +1,24 @@
 # Graph Maker 📊
 
-A sleek, real-time data visualization web application. Built with vanilla JavaScript and Chart.js, Graph Maker allows users to instantly generate, customize, and export beautiful charts without dealing with cluttered interfaces or complex spreadsheet software.
+A sleek, real-time data visualization web application. Built with vanilla JavaScript and Chart.js, Graph Maker allows users to instantly generate, customize, and export beautiful charts without dealing with spreadsheet software.
 
 ---
 
 ## ✨ Features
 
-* **Real-Time Preview:** The graph updates instantly as you type or change values. No "Generate" button required.
-* **Smart Auto-Save:** Powered by `localStorage`, your data rows, colors, and axis labels are automatically saved. Your workspace is exactly how you left it even after a page refresh.
-* **Multiple Chart Styles:**
-  * Choose between **Bar, Line, Area, Pie, Doughnut, Radar, and Polar Area** charts.
-  * Smooth, curved line rendering for Line and Area styles.
-* **Appearance Themes:**
-  * **Dark Mode:** High-contrast slate theme for focused work.
-  * **Light Mode:** Clean, professional look for traditional documents.
+* **Real-Time Preview:** The graph updates instantly as you type. No "Generate" button required.
+* **Smart Auto-Save:** Powered by `localStorage`, your data rows, colors, and axis labels are automatically saved.
+* **Tabbed Sidebar Interface:**
+  * **Data:** Manage your labels and values with custom number spinners and a smooth scrollable workspace.
+  * **Labels:** Customize the chart title and X/Y axis labels in a dedicated panel.
+  * **Styles:** Choose from 7 different chart types and toggle app themes.
+* **Multiple Chart Styles:** Supports Bar, Line, Area, Pie, Doughnut, Radar, and Polar Area charts.
+* **3-Way Appearance Themes:**
+  * **Dark Mode:** High-contrast slate theme.
+  * **Light Mode:** Clean and professional.
   * **Transparent Glass:** Modern "Glassmorphism" effect with backdrop blurring.
-* **Dynamic Management:**
-  * **Row Controls:** Add or remove data points fluidly.
-  * **Custom Spinners:** Precise value adjustments with integrated number spinners.
-  * **Session Reset:** A one-click "Reset" button to wipe the workspace and start a fresh project.
-* **Professional Export:**
-  * **Standard Themes:** Exports with a solid background to ensure label visibility in all image viewers.
-  * **Transparent Theme:** Exports as a true transparent `.png`, perfect for layering onto presentation slides or websites.
+* **Professional Export:** Supports true transparent PNGs for the Glass theme and solid-background PNGs for Dark/Light modes.
+* **Session Reset:** A dedicated reset button to wipe the workspace and start fresh.
 
 ---
 
@@ -30,18 +27,18 @@ A sleek, real-time data visualization web application. Built with vanilla JavaSc
 * **HTML5:** Semantic structure and accessible input controls.
 * **CSS3:** Custom properties (CSS variables), Flexbox layout, and modern `backdrop-filter` effects.
 * **JavaScript (ES6+):** Event delegation, DOM manipulation, and persistence logic.
-* **[Chart.js](https://www.chartjs.org/):** Core engine for rendering the interactive data canvas.
+* **[Chart.js](https://www.chartjs.org/):** Core rendering engine for the interactive data canvas.
 
 ---
 
 ## 🚀 Getting Started
 
-Graph Maker is fully deployed and ready to use right in your browser. No installation, build steps, or accounts required!
+Graph Maker is fully deployed and ready to use right in your browser.
 
 **👉 [Try Graph Maker Live Here](https://mdika131.github.io/Graph-Maker/index.html)**
 
 ### Local Development
-If you'd like to tinker with the code locally, simply clone this repository and open `index.html` in your browser.
+Clone this repository and open `index.html` in your browser.
 
 ```bash
 git clone [https://github.com/mdika131/graph-maker.git](https://github.com/mdika131/graph-maker.git)
