@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('xAxisLabel').addEventListener('input', handleUpdate);
     document.getElementById('yAxisLabel').addEventListener('input', handleUpdate);
 });
+
 // --- Core UI Logic ---
 
 // Number input spinner utilities
@@ -134,6 +135,7 @@ function incrementValue(btnElement) {
     const currentValue = Number(input.value) || 0;
     input.value = currentValue + 1;
     saveWorkspace(); // Sync state
+    createGraph();   // Live update
 }
 
 function decrementValue(btnElement) {
@@ -141,6 +143,7 @@ function decrementValue(btnElement) {
     const currentValue = Number(input.value) || 0;
     input.value = currentValue - 1;
     saveWorkspace(); // Sync state
+    createGraph();   // Live update
 }
 
 // Appends a new data row to the DOM
@@ -170,6 +173,7 @@ function addDataRow() {
     container.scrollTop = container.scrollHeight;
     
     saveWorkspace(); // Sync state
+    createGraph();   // Live update
 }
 
 // Handles row deletion
@@ -180,6 +184,7 @@ function removeDataRow(buttonElement) {
     if (container.children.length > 1) {
         buttonElement.parentElement.remove();
         saveWorkspace(); // Sync state
+        createGraph();   // Live update
     } else {
         alert("You must have at least one data point!");
     }
@@ -209,11 +214,14 @@ function createGraph() {
 
     // Ensure data exists before attempting to draw the chart
     if (labelsArray.length === 0) {
-        alert("Please enter at least one valid Label and Value!");
         return;
     }
 
-    const chartType = document.getElementById('graphType').value;
+    // Handle our custom "Area" chart type
+    const selectedType = document.getElementById('graphType').value;
+    const isArea = selectedType === 'area';
+    const chartType = isArea ? 'line' : selectedType; // Area is just a line chart with a fill
+
     const chartTitle = document.getElementById('chartTitle').value.trim();
     const xAxisLabel = document.getElementById('xAxisLabel').value.trim();
     const yAxisLabel = document.getElementById('yAxisLabel').value.trim();
@@ -228,6 +236,9 @@ function createGraph() {
         myChartInstance.destroy();
     }
 
+    // Identify charts that don't use standard X/Y grids
+    const radialCharts = ['pie', 'doughnut', 'polarArea', 'radar'];
+
     // Initialize new chart
     myChartInstance = new Chart(ctx, {
         type: chartType,
@@ -240,6 +251,8 @@ function createGraph() {
                 borderColor: colorsArray,
                 borderWidth: 2,
                 borderRadius: chartType === 'bar' ? 8 : 0,
+                fill: isArea || chartType === 'polarArea' || chartType === 'radar', // Fills the space under the line
+                tension: 0.4, // Makes lines smooth and curvy
                 hoverOffset: 4
             }]
         },
@@ -267,7 +280,16 @@ function createGraph() {
                     displayColors: true
                 }
             },
-            scales: chartType === 'pie' || chartType === 'doughnut' ? {} : {
+            // Smart axes: Hide standard grids for circular charts, style the radial grids
+            scales: radialCharts.includes(chartType) ? {
+                ...(chartType === 'radar' || chartType === 'polarArea' ? {
+                    r: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { display: false } // Hides messy numbers inside the web
+                    }
+                } : {})
+            } : {
                 x: {
                     title: {
                         display: xAxisLabel !== "", // Only render if user provided an X label
