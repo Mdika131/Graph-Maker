@@ -42,3 +42,10 @@ Clone this repository and open `index.html` in your browser.
 
 ```bash
 git clone [https://github.com/mdika131/graph-maker.git](https://github.com/mdika131/graph-maker.git)
+```
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE). You are free to use, modify, and distribute this software for personal or commercial projects, provided the original copyright notice is included.
