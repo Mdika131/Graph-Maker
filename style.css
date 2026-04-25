@@ -375,8 +375,9 @@ input[type="number"]::-webkit-inner-spin-button {
     flex-shrink: 0;
 }
 
+/* Premium styling for the Download button */
 .download-btn {
-    width: 100%;
+     width: 100%;
     margin-top: 0.4rem;
     background: var(--accent-gradient);
     color: white;
@@ -397,12 +398,22 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .download-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 25px -5px var(--accent-glow);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); /* Green glow */
     filter: brightness(1.1);
 }
 
 .download-btn:active {
     transform: translateY(0);
+}
+
+/* Make the arrow bounce slightly on hover */
+.download-btn:hover svg {
+    animation: bounceDown 0.6s infinite;
+}
+
+@keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
 }
 
 .input-group, .action-buttons {
@@ -551,3 +562,41 @@ body.transparent-theme .card {
     flex-grow: 1;
 }
 
+/* Premium styling for the Share Link button */
+.share-btn {
+    width: 100%;
+    margin-top: 0.4rem;
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    padding: 1.2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px -5px var(--accent-glow);
+}
+
+.share-btn:hover {
+    transform: translateY(-2px); /* Makes button feel "interactive" */
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3); /* Purple glow on hover */
+    filter: brightness(1.1);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+.share-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.share-btn:hover svg {
+    transform: translateY(-2px); /* Icon bounces slightly */
+}
