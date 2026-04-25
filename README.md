@@ -20,7 +20,7 @@ A sleek, real-time data visualization web application. Built with vanilla JavaSc
 * **Professional Export:** Supports true transparent PNGs for the Glass theme and solid-background PNGs for Dark/Light modes.
 * **Session Reset:** A dedicated reset button to wipe the workspace and start fresh.
 * **CSV Import:** Load label/value pairs directly from a CSV file.
-* **Share Link** Share your graph to other users.
+* **Share Link:** Share your graph directly to other users.
 
 ---
 
