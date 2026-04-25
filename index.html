@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graph Maker</title>
+    <meta name="google-site-verification" content="klj9dPHL1Zgy7YoznS1sn6UELE7e4qh3FOuo_6mn97Y" />
+    <title>Graph Maker | Instant Real-Time Data Visualization</title>
+    <meta name="title" content="Graph Maker | Instant Real-Time Data Visualization">
+    <meta name="description" content="A free, open-source tool to create and download beautiful charts instantly. No account required.">
+    <meta name="keywords" content="graph maker, chart generator, data visualization, open source, Chart.js, free tool">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -83,8 +87,17 @@
                     <button type="button" class="add-btn" onclick="document.getElementById('csv-import').click()">📥 Import CSV</button>    
 
                 <div class="action-buttons">
-                    <button onclick="downloadGraph()" class="download-btn" id="downloadBtn" style="display: none;">
-                        ↓ Download PNG
+                    <button id="downloadBtn" onclick="downloadGraph()" class="download-btn" style="display: none;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                    <button id="shareBtn" onclick="shareGraph()" class="share-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8m-10-4l4-4m0 0l4 4m-4-4v12"/>
+                        </svg>
+                        Share Link
                     </button>
                 </div>
             </div>
