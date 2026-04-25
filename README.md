@@ -1,6 +1,6 @@
 # Graph Maker 📊
 
-A sleek, real-time data visualization web application. Built with vanilla JavaScript and Chart.js, Graph Maker allows users to instantly generate, customize, and export beautiful charts without dealing with spreadsheet software.
+A sleek, real-time data visualization web application. Built with vanilla JavaScript and Chart.js, Graph Maker allows users to instantly generate, customize, and export beautiful charts without dealing with cluttered interfaces or complex spreadsheet software.
 
 ---
 
