@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="klj9dPHL1Zgy7YoznS1sn6UELE7e4qh3FOuo_6mn97Y" />
-    <title>Graph Maker | Instant Real-Time Data Visualization</title>
-    <meta name="title" content="Graph Maker | Instant Real-Time Data Visualization">
-    <meta name="description" content="A free, open-source tool to create and download beautiful charts instantly. No account required.">
-    <meta name="keywords" content="graph maker, chart generator, data visualization, open source, Chart.js, free tool">
+    <title>Graph Maker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,9 +20,9 @@
             <div class="control-panel">
     
                 <div class="tab-navigation">
-                    <button class="tab-btn active" onclick="switchTab('data-tab')">Data</button>
-                    <button class="tab-btn" onclick="switchTab('labels-tab')">Labels</button>
-                    <button class="tab-btn" onclick="switchTab('styles-tab')">Styles</button>
+                    <button class="tab-btn active" onclick="switchTab(event, 'data-tab')">Data</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'labels-tab')">Labels</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'styles-tab')">Styles</button>
                 </div>
 
                 <div id="data-tab" class="tab-content active">
@@ -82,6 +78,9 @@
                         </div>
                     </div>
                 </div>
+
+                <input type="file" id="csv-import" accept=".csv" style="display:none" onchange="handleCSVImport(event)">
+                    <button type="button" class="add-btn" onclick="document.getElementById('csv-import').click()">📥 Import CSV</button>    
 
                 <div class="action-buttons">
                     <button onclick="downloadGraph()" class="download-btn" id="downloadBtn" style="display: none;">
