@@ -18,72 +18,68 @@
             </header>
 
             <div class="control-panel">
-                
-                <div class="data-header">
-                    <label>Your Data Points</label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button onclick="clearWorkspace()" class="add-btn" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">⟲ Reset</button>
-                        <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
-                    </div>
+    
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="switchTab('data-tab')">Data</button>
+                    <button class="tab-btn" onclick="switchTab('labels-tab')">Labels</button>
+                    <button class="tab-btn" onclick="switchTab('styles-tab')">Styles</button>
                 </div>
 
-                <div id="data-points-container" class="data-points-container">
-                    <div class="data-row">
-                        <input type="color" class="data-color" value="#6366f1" title="Pick a color">
-                        <input type="text" class="data-label" placeholder="Label">
-                        <div class="number-input-wrapper">
-                            <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
-                            <input type="number" class="data-value" value="0">
-                            <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
+                <div id="data-tab" class="tab-content active">
+                    <div class="data-header">
+                        <label>Your Data Points</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="clearWorkspace()" class="add-btn" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">⟲ Reset</button>
+                            <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
                         </div>
-                        <button onclick="removeDataRow(this)" class="remove-btn" title="Remove row">✕</button>
                     </div>
+                    <div id="data-points-container" class="data-points-container">
+                        </div>
                 </div>
 
-                <div class="input-group" style="margin-top: 1rem;">
-                    <label for="chartTitle">Chart Title</label>
-                    <input type="text" id="chartTitle" placeholder="e.g., Monthly Revenue 2024">
-                </div>
-
-                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <div class="input-group" style="flex: 1;">
+                <div id="labels-tab" class="tab-content">
+                    <div class="input-group">
+                        <label for="chartTitle">Chart Title</label>
+                        <input type="text" id="chartTitle" placeholder="e.g., Monthly Revenue 2024">
+                    </div>
+                    <div class="input-group" style="margin-top: 1rem;">
                         <label for="xAxisLabel">X-Axis Label</label>
                         <input type="text" id="xAxisLabel" placeholder="e.g., Months">
                     </div>
-                    <div class="input-group" style="flex: 1;">
+                    <div class="input-group" style="margin-top: 1rem;">
                         <label for="yAxisLabel">Y-Axis Label</label>
                         <input type="text" id="yAxisLabel" placeholder="e.g., Sales ($)">
                     </div>
                 </div>
-                
-                <div class="input-group" style="margin-top: 1rem;">
-                    <label for="themeSelect">Appearance</label>
-                    <div class="select-wrapper">
-                        <select id="themeSelect" onchange="changeTheme(this.value)">
-                            <option value="dark">Dark Mode</option>
-                            <option value="light">Light Mode</option>
-                            <option value="transparent">Transparent Mode</option>
-                        </select>
+
+                <div id="styles-tab" class="tab-content">
+                    <div class="input-group">
+                        <label for="graphType">Chart Style</label>
+                        <div class="select-wrapper">
+                            <select id="graphType">
+                                <option value="bar">Bar Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="area">Area Chart</option>
+                                <option value="pie">Pie Chart</option>
+                                <option value="doughnut">Doughnut</option>
+                                <option value="polarArea">Polar Area</option>
+                                <option value="radar">Radar Chart</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="input-group" style="margin-top: 1rem;">
-                    <label for="graphType">Chart Style</label>
-                    <div class="select-wrapper">
-                        <select id="graphType">
-                            <option value="bar">Bar Chart</option>
-                            <option value="line">Line Chart</option>
-                            <option value="pie">Pie Chart</option>
-                            <option value="doughnut">Doughnut</option>
-                            <option value="radar">Radar</option>
-                            <option value="polarArea">Polar Area</option>
-                            <option value="area">Area Chart</option>
-                            <option value="bubble">Bubble Chart</option>
-                        </select>
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <label for="themeSelect">Appearance</label>
+                        <div class="select-wrapper">
+                            <select id="themeSelect" onchange="changeTheme(this.value)">
+                                <option value="dark">Dark Mode</option>
+                                <option value="light">Light Mode</option>
+                                <option value="transparent">Transparent Glass</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="action-buttons">               
+                <div class="action-buttons">
                     <button onclick="downloadGraph()" class="download-btn" id="downloadBtn" style="display: none;">
                         ↓ Download PNG
                     </button>
