@@ -5,6 +5,43 @@ Chart.defaults.color = '#94a3b8';
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.05)';
 
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedData = urlParams.get('data');
+
+    if (sharedData) {
+        try {
+            // Safer decoding for special characters
+            const decodedData = JSON.parse(decodeURIComponent(escape(atob(sharedData))));
+            
+            // Apply settings using your ACTUAL IDs
+            if (decodedData.title) document.getElementById('chartTitle').value = decodedData.title;
+            if (decodedData.xLabel) document.getElementById('xAxisLabel').value = decodedData.xLabel;
+            if (decodedData.yLabel) document.getElementById('yAxisLabel').value = decodedData.yLabel;
+            if (decodedData.type) document.getElementById('graphType').value = decodedData.type;
+
+            // Clear the workspace and add shared rows
+            const container = document.getElementById('data-points-container');
+            container.innerHTML = ''; 
+
+            decodedData.rows.forEach(item => {
+                // This calls your addDataRow(label, value, color)
+                addDataRow(item.label, item.value, item.color);
+            });
+
+            // Re-draw the graph with the new data
+            createGraph();
+            console.log("Shared graph loaded!");
+            
+        } catch (e) {
+            console.error("Error loading shared link, falling back to local storage:", e);
+            loadWorkspace(); 
+        }
+    } else {
+        loadWorkspace(); 
+    }
+};
+
 // --- Workspace Storage Logic ---
 
 function saveWorkspace() {
@@ -287,6 +324,19 @@ function downloadGraph() {
     link.download = 'Graph_Maker_Export.png';
     link.href = tempCanvas.toDataURL('image/png');
     link.click();
+
+    const btn = document.getElementById('downloadBtn');
+    const originalContent = btn.innerHTML;
+    
+    btn.innerHTML = "✓ Saved!";
+    btn.style.filter = "brightness(1.2)";
+    btn.style.background = "#10b981"; 
+    
+    setTimeout(() => {
+        btn.innerHTML = originalContent;
+        btn.style.filter = "";
+        btn.style.background = "";
+    }, 2000);
 }
 
 function changeTheme(themeName) {
@@ -352,4 +402,51 @@ function getNextColor() {
     const rowCount = container ? container.children.length : 0;
     const themeColors = ['#6366f1', '#0ea5e9', '#10b981', '#f43f5e', '#a855f7', '#facc15'];
     return themeColors[rowCount % themeColors.length];
+}
+
+/**
+ * Packages the current graph data into a shareable URL and copies it to clipboard
+ */
+function shareGraph() {
+    // 1. Collect settings using your actual IDs
+    const graphData = {
+        title: document.getElementById('chartTitle').value,
+        xLabel: document.getElementById('xAxisLabel').value,
+        yLabel: document.getElementById('yAxisLabel').value,
+        type: document.getElementById('graphType').value,
+        rows: []
+    };
+
+    // 2. Collect rows using your actual Class Names
+    document.querySelectorAll('.data-row').forEach(row => {
+        graphData.rows.push({
+            label: row.querySelector('.data-label').value,
+            value: row.querySelector('.data-value').value,
+            color: row.querySelector('.data-color').value
+        });
+    });
+
+    // 3. Encode safely and generate the URL
+    const jsonString = JSON.stringify(graphData);
+    const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
+
+    // 4. Copy to clipboard with visual button feedback
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        const btn = document.getElementById('shareBtn');
+        const originalText = btn.innerHTML;
+        
+        // Change button state to show it worked
+        btn.innerHTML = "✓ Copied!";
+        btn.style.background = "#10b981"; // Success green
+        
+        // Reset button back to normal after 2 seconds
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = ""; // Reverts to CSS gradient
+        }, 2000);
+        
+    }).catch(err => {
+        console.error('Failed to copy link: ', err);
+    });
 }
