@@ -174,6 +174,7 @@ function addDataRow() {
     
     saveWorkspace(); // Sync state
     createGraph();   // Live update
+    switchTab('data-tab');
 }
 
 // Handles row deletion
@@ -374,4 +375,21 @@ function changeTheme(themeName) {
     // Save to localStorage and refresh the UI
     saveWorkspace();
     createGraph();
+}
+
+/**
+ * Handles switching between the Data, Labels, and Styles tabs.
+ * It hides all content areas and then shows the requested one.
+ */
+function switchTab(tabId) {
+    // Remove 'active' from all buttons and content sections
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    // Set the clicked button to active
+    const clickedBtn = event.currentTarget;
+    clickedBtn.classList.add('active');
+
+    // Show the corresponding content section
+    document.getElementById(tabId).classList.add('active');
 }
