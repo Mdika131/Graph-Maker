@@ -33,6 +33,7 @@ body {
     gap: 2rem;
     width: 100%;
     max-width: 1200px;
+    height: 85vh;
     min-height: 85vh; /* Allows the container to safely stretch with the sidebar */
     align-items: stretch; /* Forces both cards to match heights */
 }
@@ -138,14 +139,16 @@ select {
     flex-grow: 1;
     padding: 2rem;
     display: flex;
-    flex-direction: column; /* THE FIX: Allows the child wrapper to grow */
+    flex-direction: column; 
     background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent 50%), var(--card-bg);
+    overflow: hidden;
 }
 
+
 .canvas-wrapper {
-    flex-grow: 1; /* THE FIX: Tells the wrapper to fill all empty vertical space */
+    flex-grow: 1; 
     width: 100%;
-    min-height: 0; /* THE FIX: Stops Chart.js from infinitely expanding */
+    min-height: 0; 
     position: relative;
 }
 
