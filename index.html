@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph Maker</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
     <div class="dashboard-container">
         
         <aside class="sidebar card">
@@ -26,7 +22,7 @@
                 <div class="data-header">
                     <label>Your Data Points</label>
                     <div style="display: flex; gap: 0.5rem;">
-                        <button onclick="clearWorkspace()" class="add-btn" style="color: #ef4444; border-color: #ef4444;">⟲ Reset</button>
+                        <button onclick="clearWorkspace()" class="add-btn" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">⟲ Reset</button>
                         <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
                     </div>
                 </div>
@@ -34,7 +30,6 @@
                 <div id="data-points-container" class="data-points-container">
                     <div class="data-row">
                         <input type="color" class="data-color" value="#6366f1" title="Pick a color">
-                        
                         <input type="text" class="data-label" placeholder="Label">
                         <div class="number-input-wrapper">
                             <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
@@ -61,15 +56,18 @@
                     </div>
                 </div>
                 
-                <div class="select-wrapper">
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label for="graphType">Chart Style</label>
+                    <div class="select-wrapper">
                         <select id="graphType">
                             <option value="bar">Bar Chart</option>
                             <option value="line">Line Chart</option>
-                            <option value="area">Area Chart</option>
                             <option value="pie">Pie Chart</option>
                             <option value="doughnut">Doughnut</option>
+                            <option value="radar">Radar</option>
                             <option value="polarArea">Polar Area</option>
-                            <option value="radar">Radar Chart</option>
+                            <option value="area">Area Chart</option>
+                            <option value="bubble">Bubble Chart</option>
                         </select>
                     </div>
                 </div>
@@ -89,7 +87,6 @@
         </main>
 
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
