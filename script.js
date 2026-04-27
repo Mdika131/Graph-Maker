@@ -11,30 +11,29 @@ window.onload = function() {
 
     if (sharedData) {
         try {
-            // Safer decoding for special characters
             const decodedData = JSON.parse(decodeURIComponent(escape(atob(sharedData))));
             
-            // Apply settings using your ACTUAL IDs
+            // Apply text settings
             if (decodedData.title) document.getElementById('chartTitle').value = decodedData.title;
             if (decodedData.xLabel) document.getElementById('xAxisLabel').value = decodedData.xLabel;
             if (decodedData.yLabel) document.getElementById('yAxisLabel').value = decodedData.yLabel;
             if (decodedData.type) document.getElementById('graphType').value = decodedData.type;
 
-            // Clear the workspace and add shared rows
-            const container = document.getElementById('data-points-container');
-            container.innerHTML = ''; 
+            // Clear the workspace completely
+            document.getElementById('categories-container').innerHTML = '';
+            document.getElementById('datasets-container').innerHTML = '';
 
-            decodedData.rows.forEach(item => {
-                // This calls your addDataRow(label, value, color)
-                addDataRow(item.label, item.value, item.color);
-            });
+            // Rebuild the new multi-dataset structure from the shared link
+            if (decodedData.categories && decodedData.datasets) {
+                decodedData.categories.forEach(cat => addCategory(cat));
+                decodedData.datasets.forEach(ds => addDataset(ds.name, ds.color, ds.values));
+            }
 
-            // Re-draw the graph with the new data
             createGraph();
-            console.log("Shared graph loaded!");
+            console.log("Shared graph loaded successfully!");
             
         } catch (e) {
-            console.error("Error loading shared link, falling back to local storage:", e);
+            console.error("Link is broken or outdated, falling back to local storage:", e);
             loadWorkspace(); 
         }
     } else {
@@ -45,18 +44,21 @@ window.onload = function() {
 // --- Workspace Storage Logic ---
 
 function saveWorkspace() {
-    const rows = document.querySelectorAll('.data-row');
-    const workspaceData = [];
-
-    rows.forEach(row => {
-        const color = row.querySelector('.data-color').value;
-        const label = row.querySelector('.data-label').value;
-        const value = row.querySelector('.data-value').value;
-        workspaceData.push({ color, label, value });
+    // 1. Save all category labels
+    const categories = Array.from(document.querySelectorAll('.category-row .data-label')).map(input => input.value);
+    
+    // 2. Save all dataset configurations and their grid values
+    const datasets = Array.from(document.querySelectorAll('.dataset-block')).map(block => {
+        return {
+            name: block.querySelector('.dataset-name-input').value,
+            color: block.querySelector('.data-color').value,
+            values: Array.from(block.querySelectorAll('.data-value')).map(input => Number(input.value) || 0)
+        };
     });
 
     const saveState = {
-        data: workspaceData,
+        categories: categories,
+        datasets: datasets,
         chartType: document.getElementById('graphType').value,
         chartTitle: document.getElementById('chartTitle').value,
         xAxisLabel: document.getElementById('xAxisLabel').value,
@@ -71,63 +73,75 @@ function loadWorkspace() {
     
     if (savedState) {
         const parsedState = JSON.parse(savedState);
-        const container = document.getElementById('data-points-container');
         
+        // Restore standard inputs
         if (parsedState.chartType) document.getElementById('graphType').value = parsedState.chartType;
         if (parsedState.chartTitle) document.getElementById('chartTitle').value = parsedState.chartTitle;
         if (parsedState.xAxisLabel) document.getElementById('xAxisLabel').value = parsedState.xAxisLabel;
         if (parsedState.yAxisLabel) document.getElementById('yAxisLabel').value = parsedState.yAxisLabel;
 
-        if (parsedState.data && parsedState.data.length > 0) {
-            container.innerHTML = ''; 
+        // Restore multi-dataset arrays if they exist in storage
+        if (parsedState.categories && parsedState.datasets) {
+            document.getElementById('categories-container').innerHTML = ''; 
+            document.getElementById('datasets-container').innerHTML = ''; 
 
-            parsedState.data.forEach(data => {
-                addDataRow(data.label, data.value, data.color);
-            });
+            parsedState.categories.forEach(cat => addCategory(cat));
+            parsedState.datasets.forEach(ds => addDataset(ds.name, ds.color, ds.values));
             
             createGraph(); 
+            return; // Exit early if successful
         }
     }
-}
+    
+    // Fallback: If no saved data, or old data format, start fresh
+    document.getElementById('categories-container').innerHTML = '';
+    document.getElementById('datasets-container').innerHTML = '';
+    addCategory();
+    addDataset();
+}   
 
 function clearWorkspace() {
     if (confirm("Are you sure you want to clear your entire graph? This cannot be undone.")) {
+        // 1. Wipe the local storage memory
         localStorage.removeItem('graphMakerData');
         
+        // 2. Clear out the global text settings
         document.getElementById('chartTitle').value = '';
         document.getElementById('xAxisLabel').value = '';
         document.getElementById('yAxisLabel').value = '';
         
-        const container = document.getElementById('data-points-container');
-        container.innerHTML = '';
-        
+        // 3. Destroy the current chart visually
         if (myChartInstance != null) {
             myChartInstance.destroy();
             myChartInstance = null;
         }
         
         document.getElementById('downloadBtn').style.display = 'none';
-        addDataRow(); 
+        
+        // 4. Wipe the new multi-dataset containers
+        document.getElementById('categories-container').innerHTML = '';
+        document.getElementById('datasets-container').innerHTML = '';
+        
+        // 5. Inject a fresh, blank state
+        addCategory();
+        addDataset();
     }
 }
 
 // Lifecycle Hooks
 document.addEventListener('DOMContentLoaded', () => {
-    loadWorkspace();
+    // Note: loadWorkspace() is already called by window.onload, so we removed it from here to prevent double-loading.
     
     function handleUpdate() {
         saveWorkspace();
-        const firstRow = document.querySelector('.data-row');
-        if (firstRow) {
-            const firstLabel = firstRow.querySelector('.data-label').value;
-            const firstValue = firstRow.querySelector('.data-value').value;
-            if (firstLabel !== "" || firstValue !== "") {
-                createGraph(); 
-            }
-        }
+        createGraph(); 
     }
 
-    document.getElementById('data-points-container').addEventListener('input', handleUpdate);
+    // Bind auto-updating to the new layout containers
+    document.getElementById('categories-container').addEventListener('input', handleUpdate);
+    document.getElementById('datasets-container').addEventListener('input', handleUpdate);
+    
+    // Bind auto-updating to settings
     document.getElementById('graphType').addEventListener('change', handleUpdate);
     document.getElementById('chartTitle').addEventListener('input', handleUpdate);
     document.getElementById('xAxisLabel').addEventListener('input', handleUpdate);
@@ -138,91 +152,169 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function incrementValue(btnElement) {
     const input = btnElement.previousElementSibling;
-    const currentValue = Number(input.value) || 0;
-    input.value = currentValue + 1;
-    saveWorkspace();
-    createGraph();
+    input.value = (Number(input.value) || 0) + 1;
+    createGraph(); saveWorkspace();
 }
 
 function decrementValue(btnElement) {
     const input = btnElement.nextElementSibling;
-    const currentValue = Number(input.value) || 0;
-    input.value = currentValue - 1;
-    saveWorkspace();
-    createGraph();
+    input.value = (Number(input.value) || 0) - 1;
+    createGraph(); saveWorkspace();
 }
 
-// Appends a new data row to the DOM
-function addDataRow(label = '', value = 0, color = null) {
-    const container = document.getElementById('data-points-container');
-    const newRow = document.createElement('div');
-    newRow.className = 'data-row';
-
-    const rowColor = color || getNextColor();
-
-    newRow.innerHTML = `
-        <input type="color" class="data-color" value="${rowColor}" title="Pick a color">
-        <input type="text" class="data-label" placeholder="Label" value="${label}">
-        <div class="number-input-wrapper">
-            <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
-            <input type="number" class="data-value" value="${value}">
-            <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
-        </div>
-        <button type="button" class="remove-btn" onclick="removeDataRow(this)" title="Remove point">×</button>
-    `;
-
-    container.appendChild(newRow);
+/**
+ * Adds a new Category (X-Axis label) and injects a new value input into every existing dataset.
+ */
+function addCategory(catName = '') {
+    const container = document.getElementById('categories-container');
+    const index = container.children.length;
     
-    container.scrollTop = container.scrollHeight;
-    saveWorkspace(); 
-    createGraph();
+    const row = document.createElement('div');
+    row.className = 'category-row';
+    row.innerHTML = `
+        <input type="text" class="data-label" placeholder="e.g. Q1" value="${catName}" oninput="createGraph(); saveWorkspace()">
+        <button type="button" class="remove-btn" onclick="removeCategory(this)">×</button>
+    `;
+    container.appendChild(row);
+
+    // Keep datasets synchronized: Add a new blank value box to every dataset
+    document.querySelectorAll('.dataset-values-grid').forEach(grid => {
+        grid.insertAdjacentHTML('beforeend', createValueInputHTML(0));
+    });
+
+    createGraph(); saveWorkspace();
+
+    // Update all dataset labels dynamically when a category name changes
+    document.querySelectorAll('.category-row .data-label').forEach((input, idx) => {
+        input.addEventListener('input', (e) => {
+            document.querySelectorAll('.dataset-block').forEach(block => {
+                const labels = block.querySelectorAll('.value-input-item label');
+                if (labels[idx]) labels[idx].innerText = e.target.value || `Cat ${idx+1}`;
+            });
+        });
+    });
 }
 
-// Handles row deletion
-function removeDataRow(buttonElement) {
-    const container = document.getElementById('data-points-container');
+/**
+ * Removes a Category and its corresponding values from all datasets.
+ */
+function removeCategory(btn) {
+    const row = btn.closest('.category-row');
+    const container = row.parentNode;
+    const index = Array.from(container.children).indexOf(row);
+    
     if (container.children.length > 1) {
-        buttonElement.parentElement.remove();
-        saveWorkspace();
-        createGraph();
+        row.remove();
+        // Remove the exact nth value from every dataset so everything stays aligned
+        document.querySelectorAll('.dataset-values-grid').forEach(grid => {
+            if (grid.children[index]) grid.children[index].remove();
+        });
+        createGraph(); saveWorkspace();
     } else {
-        alert("You must have at least one data point!");
+        alert("You must have at least one category on the X-axis!");
     }
 }
 
+/**
+ * Generates the HTML snippet for a single number input, with a label!
+ */
+function createValueInputHTML(value, labelText = 'Value') {
+    return `
+        <div class="value-input-item">
+            <label>${labelText}</label>
+            <div class="number-input-wrapper">
+                <button type="button" class="spin-btn" onclick="decrementValue(this)">−</button>
+                <input type="number" class="data-value" value="${value}" oninput="createGraph(); saveWorkspace()">
+                <button type="button" class="spin-btn" onclick="incrementValue(this)">+</button>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Adds a new Dataset block (e.g. "2023 Sales")
+ */
+function addDataset(name = '', color = null, values = []) {
+    const container = document.getElementById('datasets-container');
+    const catCount = document.getElementById('categories-container').children.length;
+    
+    // Cycle through a premium color palette for new datasets
+    const themeColors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+    const datasetColor = color || themeColors[container.children.length % themeColors.length];
+    
+    const block = document.createElement('div');
+    block.className = 'dataset-block';
+    
+    // Generate the right number of value inputs, grabbing the label from the UI
+    let valuesHTML = '';
+    const categoryInputs = document.querySelectorAll('.category-row .data-label');
+    
+    for(let i = 0; i < catCount; i++) {
+        const val = values[i] !== undefined ? values[i] : 0;
+        const catName = categoryInputs[i] ? categoryInputs[i].value || `Cat ${i+1}` : `Cat ${i+1}`;
+        valuesHTML += createValueInputHTML(val, catName);
+    }
+
+    block.innerHTML = `
+        <div class="dataset-header">
+            <input type="color" class="data-color" value="${datasetColor}" oninput="createGraph(); saveWorkspace()">
+            <input type="text" class="dataset-name-input" placeholder="Dataset Name (e.g. Sales)" value="${name}" oninput="createGraph(); saveWorkspace()">
+            <button type="button" class="remove-btn" onclick="this.closest('.dataset-block').remove(); createGraph(); saveWorkspace()">×</button>
+        </div>
+        <div class="dataset-values-grid">
+            ${valuesHTML}
+        </div>
+    `;
+    container.appendChild(block);
+    createGraph(); saveWorkspace();
+}
+
 // Parses DOM inputs and renders the Chart.js instance
+/**
+ * Parses the dynamic DOM elements and renders the Chart.js instance
+ */
 function createGraph() {
+    // 1. Gather Categories (X-Axis Labels)
     const labelsArray = [];
-    const valuesArray = [];
-    const colorsArray = [];
-
-    const rows = document.querySelectorAll('.data-row');
-
-    rows.forEach(row => {
-        const labelInput = row.querySelector('.data-label').value.trim();
-        const valueInput = row.querySelector('.data-value').value;
-        const colorInput = row.querySelector('.data-color').value;
-
-        if (labelInput !== "" || valueInput !== "") {
-            labelsArray.push(labelInput || "Unnamed");
-            valuesArray.push(Number(valueInput) || 0);
-            colorsArray.push(colorInput);
-        }
+    document.querySelectorAll('.category-row .data-label').forEach(input => {
+        labelsArray.push(input.value.trim() || '...');
     });
 
     if (labelsArray.length === 0) return;
 
+    // 2. Global Chart Settings
     const selectedType = document.getElementById('graphType').value;
     const isArea = selectedType === 'area';
     const chartType = isArea ? 'line' : selectedType;
-
     const chartTitle = document.getElementById('chartTitle').value.trim();
     const xAxisLabel = document.getElementById('xAxisLabel').value.trim();
     const yAxisLabel = document.getElementById('yAxisLabel').value.trim();
     
+    // 3. Gather Datasets dynamically
+    const datasetsArray = [];
+    document.querySelectorAll('.dataset-block').forEach(block => {
+        const name = block.querySelector('.dataset-name-input').value.trim() || 'Unnamed';
+        const color = block.querySelector('.data-color').value;
+        const values = [];
+        
+        block.querySelectorAll('.data-value').forEach(input => {
+            values.push(Number(input.value) || 0);
+        });
+
+        datasetsArray.push({
+            label: name,
+            data: values,
+            backgroundColor: chartType === 'line' || chartType === 'radar' ? color + '33' : color + 'CC', // 33 hex adds light transparency
+            borderColor: color,
+            borderWidth: 2,
+            borderRadius: chartType === 'bar' ? 6 : 0,
+            fill: isArea || chartType === 'polarArea' || chartType === 'radar',
+            tension: 0.4
+        });
+    });
+
+    // 4. Render Chart
     const ctx = document.getElementById('myChart').getContext('2d');
-    const transparentBackgrounds = colorsArray.map(color => color + 'CC');
-    
     if (myChartInstance != null) {
         myChartInstance.destroy();
     }
@@ -233,17 +325,7 @@ function createGraph() {
         type: chartType,
         data: {
             labels: labelsArray,
-            datasets: [{
-                label: yAxisLabel || 'Data Values',
-                data: valuesArray,
-                backgroundColor: transparentBackgrounds,
-                borderColor: colorsArray,
-                borderWidth: 2,
-                borderRadius: chartType === 'bar' ? 8 : 0,
-                fill: isArea || chartType === 'polarArea' || chartType === 'radar',
-                tension: 0.4,
-                hoverOffset: 4
-            }]
+            datasets: datasetsArray
         },
         options: {
             responsive: true,
@@ -405,45 +487,47 @@ function getNextColor() {
 }
 
 /**
- * Packages the current graph data into a shareable URL and copies it to clipboard
+ * Packages the multi-dataset graph configuration into a URL and copies it
  */
 function shareGraph() {
-    // 1. Collect settings using your actual IDs
+    // 1. Gather all category names
+    const categories = Array.from(document.querySelectorAll('.category-row .data-label')).map(input => input.value);
+    
+    // 2. Gather dataset details
+    const datasets = Array.from(document.querySelectorAll('.dataset-block')).map(block => {
+        return {
+            name: block.querySelector('.dataset-name-input').value,
+            color: block.querySelector('.data-color').value,
+            values: Array.from(block.querySelectorAll('.data-value')).map(input => Number(input.value) || 0)
+        };
+    });
+
+    // 3. Combine into final payload
     const graphData = {
         title: document.getElementById('chartTitle').value,
         xLabel: document.getElementById('xAxisLabel').value,
         yLabel: document.getElementById('yAxisLabel').value,
         type: document.getElementById('graphType').value,
-        rows: []
+        categories: categories,
+        datasets: datasets
     };
 
-    // 2. Collect rows using your actual Class Names
-    document.querySelectorAll('.data-row').forEach(row => {
-        graphData.rows.push({
-            label: row.querySelector('.data-label').value,
-            value: row.querySelector('.data-value').value,
-            color: row.querySelector('.data-color').value
-        });
-    });
-
-    // 3. Encode safely and generate the URL
+    // 4. Encode and generate the shareable link
     const jsonString = JSON.stringify(graphData);
     const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
     const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
 
-    // 4. Copy to clipboard with visual button feedback
+    // 5. Copy to clipboard with UI feedback
     navigator.clipboard.writeText(shareUrl).then(() => {
         const btn = document.getElementById('shareBtn');
         const originalText = btn.innerHTML;
         
-        // Change button state to show it worked
         btn.innerHTML = "✓ Copied!";
         btn.style.background = "#10b981"; // Success green
         
-        // Reset button back to normal after 2 seconds
         setTimeout(() => {
             btn.innerHTML = originalText;
-            btn.style.background = ""; // Reverts to CSS gradient
+            btn.style.background = ""; 
         }, 2000);
         
     }).catch(err => {
