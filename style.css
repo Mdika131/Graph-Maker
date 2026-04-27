@@ -172,6 +172,7 @@ select {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.5rem;
+    flex-shrink: 0;
 }
 
 .data-header label {
@@ -197,43 +198,55 @@ select {
     background: rgba(168, 85, 247, 0.1);
 }
 
-/* --- PERFECT SCROLLING CONTAINER --- */
-.data-points-container {
+/* --- PERFECT SCROLLING CONTAINERS --- */
+.categories-container,
+.datasets-container {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     overflow-y: auto; 
     padding-right: 5px;
-    margin-bottom: 1rem;
-    flex: 1; /* Takes up all available space between the header and chart inputs */
-    min-height: 0; /* Forces the scrollbar to appear instead of breaking out */
-}
-
-/* Custom Scrollbar Styling for Data Points */
-.data-points-container {
     scrollbar-width: thin;
-    scrollbar-color: #475569 transparent; /* Firefox fallback */
+    scrollbar-color: #475569 transparent;
 }
 
-/* Webkit scrollbar configuration */
-.data-points-container::-webkit-scrollbar {
-    width: 8px; 
+/* Limit categories height so it doesn't push datasets off screen */
+.categories-container {
+    max-height: 180px; 
+    margin-bottom: 0.5rem;
 }
 
-.data-points-container::-webkit-scrollbar-track {
+/* Let datasets take up the rest of the available sidebar space */
+.datasets-container {
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 1rem;
+}
+
+/* Webkit custom scrollbars for the new containers */
+.categories-container::-webkit-scrollbar,
+.datasets-container::-webkit-scrollbar,
+.tab-content::-webkit-scrollbar {
+    width: 6px; 
+}
+
+.categories-container::-webkit-scrollbar-track,
+.datasets-container::-webkit-scrollbar-track,
+.tab-content::-webkit-scrollbar-track {
     background: rgba(15, 23, 42, 0.3); 
     border-radius: 10px;
 }
 
-.data-points-container::-webkit-scrollbar-thumb {
+.categories-container::-webkit-scrollbar-thumb,
+.datasets-container::-webkit-scrollbar-thumb,
+.tab-content::-webkit-scrollbar-thumb {
     background-color: #475569; 
     border-radius: 10px;
-    border: 2px solid var(--card-bg);
 }
 
-.data-points-container::-webkit-scrollbar-thumb:hover {
+.categories-container::-webkit-scrollbar-thumb:hover,
+.datasets-container::-webkit-scrollbar-thumb:hover {
     background-color: #6366f1; 
-    cursor: pointer;
 }
 
 /* Data Row Layout Constraints */
@@ -257,7 +270,7 @@ select {
     border-radius: 10px;
     overflow: hidden;
     transition: all 0.3s ease;
-    min-width: 130px;
+    min-width: 100%;
 }
 
 /* Delegate input focus state to parent wrapper */
@@ -599,4 +612,107 @@ body.transparent-theme .card {
 
 .share-btn:hover svg {
     transform: translateY(-2px); /* Icon bounces slightly */
+}
+
+/* --- Multi-Dataset UI Components --- */
+
+/* Container for X-Axis category labels */
+.categories-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Individual dataset card in the sidebar */
+.dataset-block {
+    background: rgba(15, 23, 42, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Header for the dataset block (Name, Color, Delete) */
+.dataset-header {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.dataset-name-input {
+    flex: 1;
+    font-weight: 600;
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Grid for the actual data values inside a dataset */
+.dataset-values-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two values per row to save space */
+    gap: 0.8rem;
+}
+
+/* Individual value input group */
+.value-input-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.value-input-item label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Align category labels in a row with the dataset values */
+.category-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Ensure the sidebar remains scrollable with more data */
+.tab-content {
+    max-height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+#data-tab {
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.categories-container {
+    flex: auto; 
+    height: auto; 
+    overflow-y: auto;
+    margin-bottom: 0.2rem;
+    padding-right: 5px;
+    padding-bottom: 2rem;
+}
+
+.datasets-container {
+    flex: 1 1 auto; 
+    height: auto; 
+    overflow-y: auto;
+    padding-right: 5px;
+    padding-bottom: 0.2rem;
+}
+
+.categories-container::-webkit-scrollbar,
+.datasets-container::-webkit-scrollbar,
+.tab-content::-webkit-scrollbar {
+    width: 3px;
 }
