@@ -31,16 +31,24 @@
 
                 <div id="data-tab" class="tab-content active">
                     <div class="data-header">
-                        <label>Your Data Points</label>
+                        <label>Categories (X-Axis)</label>
+                        <button onclick="addCategory()" class="add-btn">+ Add Category</button>
+                    </div>
+                    <div id="categories-container" class="categories-container" style="margin-bottom: 1.5rem;">
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin: 1rem 0;">
+                    
+                    <div class="data-header">
+                        <label>Datasets</label>
                         <div style="display: flex; gap: 0.5rem;">
                             <button onclick="clearWorkspace()" class="add-btn" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">⟲ Reset</button>
-                            <button onclick="addDataRow()" class="add-btn">+ Add Row</button>
+                            <button onclick="addDataset()" class="add-btn">+ Add Dataset</button>
                         </div>
                     </div>
-                    <div id="data-points-container" class="data-points-container">
-                        </div>
-                </div>
-
+                    <div id="datasets-container" class="datasets-container">
+                    </div>
+                </div> 
                 <div id="labels-tab" class="tab-content">
                     <div class="input-group">
                         <label for="chartTitle">Chart Title</label>
@@ -55,7 +63,6 @@
                         <input type="text" id="yAxisLabel" placeholder="e.g., Sales ($)">
                     </div>
                 </div>
-
                 <div id="styles-tab" class="tab-content">
                     <div class="input-group">
                         <label for="graphType">Chart Style</label>
@@ -82,9 +89,8 @@
                         </div>
                     </div>
                 </div>
-
                 <input type="file" id="csv-import" accept=".csv" style="display:none" onchange="handleCSVImport(event)">
-                    <button type="button" class="add-btn" onclick="document.getElementById('csv-import').click()">📥 Import CSV</button>    
+                <button type="button" class="add-btn" onclick="document.getElementById('csv-import').click()" style="margin-top: 1rem; margin-bottom: 1rem;">📥 Import CSV</button>    
 
                 <div class="action-buttons">
                     <button id="downloadBtn" onclick="downloadGraph()" class="download-btn" style="display: none;">
@@ -100,6 +106,7 @@
                         Share Link
                     </button>
                 </div>
+
             </div>
         </aside>
 
