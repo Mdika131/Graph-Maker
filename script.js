@@ -280,7 +280,14 @@ function createGraph() {
         labelsArray.push(input.value.trim() || '...');
     });
 
-    if (labelsArray.length === 0) return;
+    if (labelsArray.length === 0 || datasetBlocks.length === 0) {
+        if (myChartInstance != null) {
+            myChartInstance.destroy();
+            myChartInstance = null;
+        }
+        document.getElementById('downloadBtn').style.display = 'none';
+        return; 
+    }
 
     // 2. Global Chart Settings
     const selectedType = document.getElementById('graphType').value;
@@ -456,34 +463,53 @@ function handleCSVImport(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const text = e.target.result;
-        const lines = text.split('\n');
+        // Split by lines and remove any empty trailing lines
+        const lines = text.split('\n').filter(line => line.trim() !== '');
         
-        lines.forEach(line => {
-            if (!line.trim()) return;
-            const parts = line.split(',');
-            
-            if (parts.length >= 2) {
-                const label = parts[0].trim().replace(/['"]+/g, ''); 
-                const value = parseFloat(parts[1].trim());
+        if (lines.length < 2) {
+            alert("Your CSV needs at least one header row and one row of data!");
+            return;
+        }
 
-                if (!isNaN(value)) {
-                    addDataRow(label, value); 
-                }
+        // 1. Parse Headers (First row)
+        // Assume Column 1 is X-Axis (Categories) and Column 2+ are Dataset names
+        const headers = lines[0].split(',').map(h => h.trim().replace(/['"]+/g, ''));
+        const datasetNames = headers.slice(1);
+
+        // Prepare arrays to hold our parsed data
+        const categories = [];
+        const datasetValues = datasetNames.map(() => []); 
+
+        // 2. Parse Data Rows
+        for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(',');
+            // First item is the Category
+            categories.push(parts[0].trim().replace(/['"]+/g, ''));
+
+            // The rest belong to datasets
+            for (let j = 0; j < datasetNames.length; j++) {
+                const val = parseFloat(parts[j + 1]);
+                datasetValues[j].push(isNaN(val) ? 0 : val);
             }
+        }
+
+        // 3. Clear workspace to make room
+        document.getElementById('categories-container').innerHTML = '';
+        document.getElementById('datasets-container').innerHTML = '';
+
+        // 4. Inject parsed Categories
+        categories.forEach(cat => addCategory(cat));
+
+        // 5. Inject parsed Datasets
+        datasetNames.forEach((name, index) => {
+            addDataset(name, null, datasetValues[index]);
         });
 
-        createGraph();   // Fixed from updateChart()
+        createGraph(); 
         saveWorkspace(); 
-        event.target.value = ''; 
+        event.target.value = ''; // Reset input
     };
     reader.readAsText(file);
-}
-
-function getNextColor() {
-    const container = document.getElementById('data-points-container');
-    const rowCount = container ? container.children.length : 0;
-    const themeColors = ['#6366f1', '#0ea5e9', '#10b981', '#f43f5e', '#a855f7', '#facc15'];
-    return themeColors[rowCount % themeColors.length];
 }
 
 /**
@@ -514,7 +540,11 @@ function shareGraph() {
 
     // 4. Encode and generate the shareable link
     const jsonString = JSON.stringify(graphData);
-    const encodedData = btoa(unescape(encodeURIComponent(jsonString)));
+    const encodedData = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+        }
+    ));
     const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
 
     // 5. Copy to clipboard with UI feedback
